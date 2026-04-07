@@ -288,7 +288,9 @@ async function searchStocks(query) {
   const list = data.QuotationCodeTable.Data;
   const results = [];
   list.forEach(item => {
-    const code = String(item.Code || '').padStart(6, '0');
+    let code = String(item.Code || '');
+    if (code.includes('.')) code = code.split('.')[1];
+    code = code.padStart(6, '0');
     const name = item.Name || '';
     if (!code || !name) return;
     // 过滤出 A 股: SecurityType 为 A、B 等股票类型，或根据市场判断
@@ -395,7 +397,7 @@ async function renderMarket() {
   const stbody = document.querySelector('#stockTable tbody');
   stbody.innerHTML = '';
   spot.forEach(r => {
-    const color = r.pct >= 0 ? 'green' : 'red';
+    const color = r.pct >= 0 ? 'red' : 'green';
     const tr = document.createElement('tr');
     tr.style.cursor='pointer';
     tr.onclick = () => { switchTab('stock'); document.getElementById('stockSelect').value = r.code; onStockChange(); };
